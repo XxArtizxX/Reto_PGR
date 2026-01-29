@@ -11,6 +11,9 @@ public  class Persona {
 		this.tipoPersona=tipoPersona;
 	}
 
+	public Persona() {
+	}
+
 	public String getDni() {
 		return dni;
 	}
