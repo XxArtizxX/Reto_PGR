@@ -1,8 +1,13 @@
 package clases;
 
+import java.io.Serializable;
 import enumeraciones.TipoCarta;
 
-public class Producto {
+public class Producto implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private TipoCarta tipoCaja;
 	private double precio;
 	private int stock=200;

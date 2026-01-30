@@ -1,5 +1,9 @@
 package clases;
 public class Empleado extends Persona{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int cod_Cliente;
 	private int cantidad_Compras;
 	public Empleado() {
