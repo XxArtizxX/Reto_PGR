@@ -1,20 +1,17 @@
 package clases;
 
-import java.util.ArrayList;
 import enumeraciones.TipoCarta;
 
 public class Producto {
 	private TipoCarta tipoCaja;
 	private double precio;
-	private int stock;
-	private ArrayList<Integer> Cantidad;
+	private int stock=200;
 
-	public Producto(TipoCarta tipoCaja, double precio, int stock, ArrayList<Integer> cantidad) {
+	public Producto(TipoCarta tipoCaja, double precio, int stock) {
 		this.tipoCaja = tipoCaja;
 		this.precio = precio;
-		this.stock = 200;
-		Cantidad = cantidad;
-	}
+		this.stock = stock;	
+		}
 	public TipoCarta getTipoCaja() {
 		return tipoCaja;
 	}
@@ -33,17 +30,12 @@ public class Producto {
 	public void setStock(int stock) {
 		this.stock = stock;
 	}
-	public ArrayList<Integer> getCantidad() {
-		return Cantidad;
-	}
-	public void setCantidad(ArrayList<Integer> cantidad) {
-		Cantidad = cantidad;
-	}
 	@Override
 	public String toString() {
-		return "Producto [tipoCaja=" + tipoCaja + ", precio=" + precio + ", stock=" + stock + ", Cantidad=" + Cantidad
-				+ "]";
-	}	
+		return "Producto [tipoCaja=" + tipoCaja + ", precio=" + precio + ", stock=" + stock + "]";
+	}
+
+
 }
 
 
