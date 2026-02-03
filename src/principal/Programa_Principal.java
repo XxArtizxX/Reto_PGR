@@ -187,10 +187,32 @@ public class Programa_Principal {
 			System.out.println("El fichero no existe");
 		}
 	}
-	
-	
-	
-	
-	
-	
+
+	public static void modificarPrecio() {
+		TipoCarta tipoCaja;	
+		String tipoProducto;
+		boolean error=false;
+		
+		do {
+			error=false;
+			System.out.println("Introduce el tipo de producto (Magic, Fútbol o Pokémon)");
+			tipoProducto=Utilidades.introducirCadena();
+
+			try {
+
+				tipoCaja = TipoCarta.valueOf(tipoProducto); 
+
+			} catch (IllegalArgumentException e) {
+
+				System.err.println("El producto '" + tipoProducto + "' no es válido.");
+				error=true;
+			}
+		}while(error==true);
+		
+
+	}
+
+
+
+
 }
