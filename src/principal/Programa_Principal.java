@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.time.LocalDateTime;
 
 import clases.Cliente;
 import clases.Empleado;
@@ -47,36 +48,39 @@ public class Programa_Principal {
 
 			switch (opcion) {
 			case 1:
-				System.out.println("Dando alta a persona");
+				System.out.println("Dando alta a persona...");
+				altaPersona(fich_personas);
 				break;
 
 			case 2:
-				System.out.println("Dando alta a producto");
+				System.out.println("Dando alta a producto...");
 				break;
 
 			case 3:
-				System.out.println("Realizando venta");
+				System.out.println("Realizando venta...");
 				break;
 
 			case 4:
-				System.out.println("Consultando ventas por fecha");
+				System.out.println("Consultando ventas por fecha...");
+				consultarVentas(fich_ventas);
 				break;
 
 			case 5:
-				System.out.println("Listando productos");
+				System.out.println("Listando productos...");
 				listarInventarioProductos(fich_productos);
 				break;
 
 			case 6:
-				System.out.println("Modificando precio por tipo de producto");
+				System.out.println("Modificando precio por tipo de producto...");
+				modificarPrecio();
 				break;
 
 			case 7:
-				System.out.println("ventas totales");
+				System.out.println("ventas totales:");
 				break;
 
 			case 8:
-				System.out.println("ranking de compradores");
+				System.out.println("ranking de compradores:");
 				break;
 
 			case 9:
@@ -91,7 +95,8 @@ public class Programa_Principal {
 		} while (opcion != 9);
 	}
 
-	public static void altaEmpleado(File fich_personas) {
+	//Metodo 1
+	public static void altaPersona(File fich_personas) {
 		String nombre, dni, tipoPersona;
 		int cod_Cliente, cod_Empleado;
 		double sueldo;
@@ -161,16 +166,19 @@ public class Programa_Principal {
 			}
 		}
 	}
-	public static void listarInventarioProductos(File fich_productos) {
+	
+	//Metodo 4
+	public static void consultarVentas(File fich_ventas) {
+		LocalDateTime fechaVenta;
 		ObjectInputStream ois;
 		boolean finArchivo=false;
-		if (fich_productos.exists()) {
+		if (fich_ventas.exists()) {
 			try {
-				ois=new ObjectInputStream(new FileInputStream(fich_productos));
+				ois=new ObjectInputStream(new FileInputStream(fich_ventas));
 				while (!finArchivo) {
 					try {
-						Empleado e = (Empleado) ois.readObject();
-						System.out.println(e);
+						fechaVenta = (LocalDateTime) ois.readObject();
+						System.out.println();
 					} catch (EOFException e) {
 						finArchivo = true;
 					}
@@ -186,8 +194,37 @@ public class Programa_Principal {
 		} else {
 			System.out.println("El fichero no existe");
 		}
+	
 	}
-
+	
+	//Metodo 5
+	public static void listarInventarioProductos(File fich_productos) {
+		ObjectInputStream ois;
+		boolean finArchivo=false;
+		if (fich_productos.exists()) {
+			try {
+				ois=new ObjectInputStream(new FileInputStream(fich_productos));
+				while (!finArchivo) {
+					try {
+						Producto p = (Producto) ois.readObject();
+						System.out.println(p);
+					} catch (EOFException e) {
+						finArchivo = true;
+					}
+				}
+				ois.close();
+			} catch (FileNotFoundException e) {
+				System.out.println("No se encontró el fichero");
+			} catch (ClassNotFoundException e) {
+				System.out.println("La clase Producto no es válida");
+			} catch (IOException e) {
+				System.out.println("Error leyendo el fichero");
+			}
+		} else {
+			System.out.println("El fichero no existe");
+		}
+	}
+//Metodo 6
 	public static void modificarPrecio() {
 		TipoCarta tipoCaja;	
 		String tipoProducto;
