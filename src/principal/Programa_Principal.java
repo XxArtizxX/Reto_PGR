@@ -1,7 +1,13 @@
 package principal;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
+import clases.Cliente;
+import clases.Empleado;
 import clases.Producto;
 import enumeraciones.TipoCarta;
 import excepciones.NoStockException;
@@ -24,13 +30,14 @@ public class Programa_Principal {
 		System.out.println("9. Salir");
 		System.out.print("Elige una opción: ");
 	}
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		int opcion;
 		File fich_personas = new File ("personas.txt");
 		File fich_productos = new File("productos.dat");
 		File fich_ventas = new File("ventas.dat");
-	
+
 		do {
 			menu();
 			opcion = utilidades.Utilidades.leerInt(1, 9);
@@ -80,4 +87,74 @@ public class Programa_Principal {
 		} while (opcion != 9);
 	}
 
+	public static void altaEmpleado(File fich_personas) {
+		String nombre, dni, tipoPersona;
+		int cod_Cliente, cod_Empleado;
+		double sueldo;
+		ObjectOutputStream oos;
+		MyObjectOutputStream moos;
+		if(!fich_personas.exists()) {
+			try {
+				oos = new ObjectOutputStream(new FileOutputStream(fich_personas));
+				System.out.println("Introduce el DNI del nuevo usuario : ");
+				dni=Utilidades.introducirCadena();
+				System.out.println("Introduce el nombre del nuevo usuario: ");
+				nombre=Utilidades.introducirCadena();
+				System.out.println("Introduce el apellido del empleado: ");
+				tipoPersona=Utilidades.introducirCadena();
+				if(tipoPersona.equalsIgnoreCase("Empleado")) {
+					System.out.println("Introduzca el codigo del nuevo Empleado");
+					cod_Empleado=Utilidades.leerInt();
+					Empleado e=new Empleado(dni, nombre, tipoPersona, cod_Empleado);
+					oos.writeObject(e);
+				}else if(tipoPersona.equalsIgnoreCase("Cliente")) {
+					System.out.println("Introduzca el codigo del nuevo cliente");
+					cod_Cliente=Utilidades.leerInt();
+					Cliente c=new Cliente(dni, nombre, tipoPersona, cod_Cliente);
+					oos.writeObject(c);
+				}else {
+					System.out.println("Ese tipo de persona no existe");
+				}
+				oos.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else if(fich_personas.exists()) {
+			System.out.println("El fichero ya existe, se añadirán al final");
+
+			try {
+				moos = new MyObjectOutputStream(new FileOutputStream(fich_personas,true));
+				System.out.println("Introduce el DNI del nuevo usuario : ");
+				dni=Utilidades.introducirCadena();
+				System.out.println("Introduce el nombre del nuevo usuario: ");
+				nombre=Utilidades.introducirCadena();
+				System.out.println("Introduce el apellido del empleado: ");
+				tipoPersona=Utilidades.introducirCadena();
+				if(tipoPersona.equalsIgnoreCase("Empleado")) {
+					System.out.println("Introduzca el codigo del nuevo Empleado");
+					cod_Empleado=Utilidades.leerInt();
+					Empleado e=new Empleado(dni, nombre, tipoPersona, cod_Empleado);
+					moos.writeObject(e);
+				}else if(tipoPersona.equalsIgnoreCase("Cliente")) {
+					System.out.println("Introduzca el codigo del nuevo cliente");
+					cod_Cliente=Utilidades.leerInt();
+					Cliente c=new Cliente(dni, nombre, tipoPersona, cod_Cliente);
+					moos.writeObject(c);
+				}else {
+					System.out.println("Ese tipo de persona no existe");
+				}
+				moos.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 }
