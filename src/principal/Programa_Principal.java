@@ -166,7 +166,7 @@ public class Programa_Principal {
 			}
 		}
 	}
-	
+
 	//Metodo 4
 	public static void consultarVentas(File fich_ventas) {
 		LocalDateTime fechaVenta;
@@ -194,9 +194,9 @@ public class Programa_Principal {
 		} else {
 			System.out.println("El fichero no existe");
 		}
-	
+
 	}
-	
+
 	//Metodo 5
 	public static void listarInventarioProductos(File fich_productos) {
 		ObjectInputStream ois;
@@ -224,20 +224,20 @@ public class Programa_Principal {
 			System.out.println("El fichero no existe");
 		}
 	}
-//Metodo 6
+	//Metodo 6
 	public static void modificarPrecio() {
 		TipoCarta tipoCaja;	
 		String tipoProducto;
 		boolean error=false;
-		
+
 		do {
 			error=false;
 			System.out.println("Introduce el tipo de producto (Magic, Fútbol o Pokémon)");
 			tipoProducto=Utilidades.introducirCadena();
 
 			try {
-
 				tipoCaja = TipoCarta.valueOf(tipoProducto); 
+
 
 			} catch (IllegalArgumentException e) {
 
@@ -245,7 +245,7 @@ public class Programa_Principal {
 				error=true;
 			}
 		}while(error==true);
-		
+
 
 	}
 
