@@ -171,7 +171,6 @@ public class Programa_Principal {
 			while (true) {
 				try {
 					Producto p = (Producto) ois.readObject();
-					// Comprobación del stock
 					if (p.getStock() < 0) {
 						throw new OverStockExcepcion(
 								"Stock negativo en " + p.getTipoCaja());
@@ -186,7 +185,6 @@ public class Programa_Principal {
 				}
 			}
 		} catch (EOFException e) {
-			// Fin del fichero
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("Error al leer productos.");
 		}
