@@ -43,7 +43,7 @@ public class Programa_Principal {
 
 		do {
 			menu();
-			opcion = utilidades.Utilidades.leerInt(1, 9);
+			opcion = Utilidades.leerInt(1, 9);
 
 			switch (opcion) {
 			case 1:
@@ -162,31 +162,29 @@ public class Programa_Principal {
 		}
 	}
 	public static void listarInventarioProductos(File fich_productos) {
-		if (!fich_productos.exists()) {
-			System.out.println("No hay productos registrados.");
-			return;
-		}
-		try (ObjectInputStream ois =
-				new ObjectInputStream(new FileInputStream(fich_productos))) {
-			while (true) {
-				try {
-					Producto p = (Producto) ois.readObject();
-					if (p.getStock() < 0) {
-						throw new OverStockExcepcion(
-								"Stock negativo en " + p.getTipoCaja());
+		ObjectInputStream ois;
+		boolean finArchivo=false;
+		if (fich_productos.exists()) {
+			try {
+				ois=new ObjectInputStream(new FileInputStream(fich_productos));
+				while (!finArchivo) {
+					try {
+						Empleado e = (Empleado) ois.readObject();
+						System.out.println(e);
+					} catch (EOFException e) {
+						finArchivo = true;
 					}
-					if (p.getStock() == 0) {
-						throw new NoStockException(
-								"Producto sin stock: " + p.getTipoCaja());
-					}
-					System.out.println(p);
-				} catch (NoStockException | OverStockExcepcion e) {
-					System.out.println(e.getMessage());
 				}
+				ois.close();
+			} catch (FileNotFoundException e) {
+				System.out.println("No se encontró el fichero");
+			} catch (ClassNotFoundException e) {
+				System.out.println("La clase Animal no es válida");
+			} catch (IOException e) {
+				System.out.println("Error leyendo el fichero");
 			}
-		} catch (EOFException e) {
-		} catch (IOException | ClassNotFoundException e) {
-			System.out.println("Error al leer productos.");
+		} else {
+			System.out.println("El fichero no existe");
 		}
 	}
 	
