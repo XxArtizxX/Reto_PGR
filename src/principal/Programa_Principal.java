@@ -12,7 +12,17 @@ import utilidades.Utilidades;
 public class Programa_Principal {
 
 	public static void menu() {
-
+		System.out.println("===== MENÚ =====");
+		System.out.println("1.- Alta Persona");
+		System.out.println("2.- Alta Producto");
+		System.out.println("3.- Realizar Venta");
+		System.out.println("4.- Consultar ventas por fecha");
+		System.out.println("5.- Listar inventario de productos");
+		System.out.println("6.- Modificar precio pidiendo el tipo de producto");
+		System.out.println("7.- Ventas totales por cada producto");
+		System.out.println("8.- Ranking de compradores");
+		System.out.println("9. Salir");
+		System.out.print("Elige una opción: ");
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -20,22 +30,9 @@ public class Programa_Principal {
 		File fich_personas = new File ("personas.txt");
 		File fich_productos = new File("productos.dat");
 		File fich_ventas = new File("ventas.dat");
-
-		
+	
 		do {
-			System.out.println("===== MENÚ =====");
-			System.out.println("1.- Alta Persona");
-			System.out.println("2.- Alta Producto");
-			System.out.println("3.- Realizar Venta");
-			System.out.println("4.- Consultar ventas por fecha");
-			System.out.println("5.- Listar inventario de productos");
-			System.out.println("6.- Modificar precio pidiendo el tipo de producto");
-			System.out.println("7.- Ventas totales por cada producto");
-			System.out.println("8.- Ranking de compradores");
-			System.out.println("9. Salir");
-			System.out.print("Elige una opción: ");
-
-
+			menu();
 			opcion = utilidades.Utilidades.leerInt(1, 9);
 
 			switch (opcion) {
