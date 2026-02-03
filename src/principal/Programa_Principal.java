@@ -1,5 +1,7 @@
 package principal;
 
+import java.io.File;
+
 import clases.Producto;
 import enumeraciones.TipoCarta;
 import excepciones.NoStockException;
@@ -15,6 +17,9 @@ public class Programa_Principal {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		int opcion;
+		File fich_personas = new File ("personas.txt");
+		File fich_productos = new File("productos.dat");
+		File fich_ventas = new File("ventas.dat");
 
 		do {
 			System.out.println("===== MENÚ =====");
