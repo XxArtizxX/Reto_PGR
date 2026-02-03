@@ -21,6 +21,7 @@ public class Programa_Principal {
 		File fich_productos = new File("productos.dat");
 		File fich_ventas = new File("ventas.dat");
 
+		
 		do {
 			System.out.println("===== MENÚ =====");
 			System.out.println("1.- Alta Persona");
