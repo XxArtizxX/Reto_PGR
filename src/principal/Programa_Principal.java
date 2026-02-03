@@ -34,35 +34,35 @@ public class Programa_Principal {
 
 			switch (opcion) {
 			case 1:
-				System.out.println("Has elegido la opción 1");
+				System.out.println("Dando alta a persona");
 				break;
 
 			case 2:
-				System.out.println("Has elegido la opción 2");
+				System.out.println("Dando alta a producto");
 				break;
 
 			case 3:
-				System.out.println("Has elegido la opción 3");
+				System.out.println("Realizando venta");
 				break;
 
 			case 4:
-				System.out.println("Has elegido la opción 3");
+				System.out.println("Consultando ventas por fecha");
 				break;
 
 			case 5:
-				System.out.println("Has elegido la opción 3");
+				System.out.println("Listando productos");
 				break;
 
 			case 6:
-				System.out.println("Has elegido la opción 3");
+				System.out.println("Modificando precio por tipo de producto");
 				break;
 
 			case 7:
-				System.out.println("Has elegido la opción 3");
+				System.out.println("ventas totales");
 				break;
 
 			case 8:
-				System.out.println("Has elegido la opción 3");
+				System.out.println("ranking de compradores");
 				break;
 
 			case 9:
