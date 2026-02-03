@@ -74,9 +74,7 @@ public class Programa_Principal {
 				System.out.println("Opción no válida");
 			}
 
-			System.out.println(); 
-
 		} while (opcion != 9);
 	}
-	
+
 }
