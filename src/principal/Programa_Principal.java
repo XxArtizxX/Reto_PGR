@@ -1,9 +1,12 @@
 package principal;
 
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import clases.Cliente;
@@ -61,6 +64,7 @@ public class Programa_Principal {
 
 			case 5:
 				System.out.println("Listando productos");
+				listarInventarioProductos(fich_productos);
 				break;
 
 			case 6:
@@ -157,4 +161,40 @@ public class Programa_Principal {
 			}
 		}
 	}
+	public static void listarInventarioProductos(File fich_productos) {
+		if (!fich_productos.exists()) {
+			System.out.println("No hay productos registrados.");
+			return;
+		}
+		try (ObjectInputStream ois =
+				new ObjectInputStream(new FileInputStream(fich_productos))) {
+			while (true) {
+				try {
+					Producto p = (Producto) ois.readObject();
+					// Comprobación del stock
+					if (p.getStock() < 0) {
+						throw new OverStockExcepcion(
+								"Stock negativo en " + p.getTipoCaja());
+					}
+					if (p.getStock() == 0) {
+						throw new NoStockException(
+								"Producto sin stock: " + p.getTipoCaja());
+					}
+					System.out.println(p);
+				} catch (NoStockException | OverStockExcepcion e) {
+					System.out.println(e.getMessage());
+				}
+			}
+		} catch (EOFException e) {
+			// Fin del fichero
+		} catch (IOException | ClassNotFoundException e) {
+			System.out.println("Error al leer productos.");
+		}
+	}
+	
+	
+	
+	
+	
+	
 }
