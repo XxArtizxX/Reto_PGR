@@ -77,7 +77,7 @@ public class Programa_Principal {
 
 			case 6:
 				System.out.println("Modificando precio por tipo de producto...");
-				modificarPrecio();
+				modificarPrecio(fich_productos);
 				break;
 
 			case 7:
@@ -355,11 +355,12 @@ public class Programa_Principal {
 		}
 	}
 	//Metodo 6
-	public static void modificarPrecio() {
-		TipoCarta tipoCaja;	
+	public static void modificarPrecio(File fich_productos) {
+		TipoCarta tipoCaja = null;	
 		String tipoProducto;
+		double precio;
 		boolean error=false;
-
+		boolean fin = false;
 		do {
 			error=false;
 			System.out.println("Introduce el tipo de producto (Magic, Fútbol o Pokémon)");
@@ -375,6 +376,43 @@ public class Programa_Principal {
 				error=true;
 			}
 		}while(error==true);
+
+		System.out.println("introduce el nuevo precio del producto");
+		precio=Utilidades.leerDouble(1,200);
+
+		File fichAux = new File("productos_aux.dat");
+
+		try (
+				ObjectInputStream ois =
+				new ObjectInputStream(new FileInputStream(fich_productos));
+				ObjectOutputStream oos =
+						new ObjectOutputStream(new FileOutputStream(fichAux))
+				) {
+
+			while (!fin) {
+				try {
+					Producto p = (Producto) ois.readObject();
+
+					if (p.getTipoCaja() == tipoCaja) {
+						p.setPrecio(precio);
+					}
+
+					oos.writeObject(p);
+
+				} catch (EOFException e) {
+					fin = true;
+				}
+			}
+
+		} catch (IOException | ClassNotFoundException e) {
+			System.out.println("Error al modificar el precio");
+			return;
+		}
+
+		fich_productos.delete();
+		fichAux.renameTo(fich_productos);
+
+		System.out.println("Precio modificado ");
 
 
 	}
