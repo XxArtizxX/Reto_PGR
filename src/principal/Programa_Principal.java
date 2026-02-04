@@ -213,7 +213,7 @@ public class Programa_Principal {
 			System.out.println("El fichero ya existe, se añadirán al final");
 
 			try {
-				oos = new ObjectOutputStream(new FileOutputStream(fich_Producto));
+				moos = new MyObjectOutputStream(new FileOutputStream(fich_Producto));
 				do {
 					error=false;
 					System.out.println("Introduce el tipo de producto (Magic, Fútbol o Pokémon)");
@@ -230,8 +230,8 @@ public class Programa_Principal {
 				System.out.println("Introduce el precio del producto");
 				precio=Utilidades.leerDouble();
 				Producto p = new Producto(tipoCaja, precio, stock);
-				oos.writeObject(p);
-				oos.close();
+				moos.writeObject(p);
+				moos.close();
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
