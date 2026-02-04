@@ -10,7 +10,7 @@ public class Producto implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private TipoCarta tipoCaja;
 	private double precio;
-	private int stock=200;
+	public static int stock=200;
 
 	public Producto(TipoCarta tipoCaja, double precio, int stock) {
 		this.tipoCaja = tipoCaja;

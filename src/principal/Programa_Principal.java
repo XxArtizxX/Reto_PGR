@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeMap;
 
+
 import clases.Cliente;
 import clases.Empleado;
 import clases.Producto;
@@ -244,7 +245,6 @@ public class Programa_Principal {
 
 	// Metodo 3 - realizarVenta sin variable tipoCaja
 	public static void realizarVenta(File fich_ventas){
-
 		String tipoProducto;
 		int cantidad;
 		boolean error;
@@ -265,9 +265,9 @@ public class Programa_Principal {
 
 				System.out.println("Introduce la cantidad:");
 				cantidad = Utilidades.leerInt();
-
+				Producto.stock-=cantidad;
 				Venta v = new Venta(TipoCarta.valueOf(tipoProducto), cantidad, LocalDateTime.now());
-
+				System.out.println("Venta guardada. Stock restante: " + Producto.stock);
 				ObjectOutputStream oos;
 				if (!fich_ventas.exists()) {
 					oos = new ObjectOutputStream(new FileOutputStream(fich_ventas));
@@ -421,7 +421,6 @@ public class Programa_Principal {
 	//Metodo 8
 	public static void rankingCompradores() {
 		TreeMap<String, Integer> ranking = new TreeMap<>();
-		//preguntar a leire como hacer para que el treemap este ordenado por fecha y coja los datos del fichero de ventas.
 	}
 
 }
