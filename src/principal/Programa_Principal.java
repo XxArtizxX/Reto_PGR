@@ -62,11 +62,8 @@ public class Programa_Principal {
 
 			case 3:
 				System.out.println("Realizando venta...");
-				try { 
-					realizarVenta(fich_ventas);
-				} catch (Exception e) {
-					System.out.println(e.getMessage());
-				}
+				realizarVenta(fich_ventas);
+
 				break;
 			case 4:
 				System.out.println("Consultando ventas por fecha...");
@@ -245,41 +242,50 @@ public class Programa_Principal {
 	}
 
 	// Metodo 3 - realizarVenta sin variable tipoCaja
-	public static void realizarVenta(File fich_ventas) throws IOException {
+	public static void realizarVenta(File fich_ventas){
 
 		String tipoProducto;
 		int cantidad;
 		boolean error;
-
-		do {
-			error = false;
-			System.out.println("Introduce el tipo de producto (MAGIC, FUTBOL o POKEMON)");
-			tipoProducto = Utilidades.introducirCadena().toUpperCase();
+		if(fich_ventas.exists()) {
 			try {
+				do {
+					error = false;
+					System.out.println("Introduce el tipo de producto (MAGIC, FUTBOL o POKEMON)");
+					tipoProducto = Utilidades.introducirCadena().toUpperCase();
+					try {
 
-				TipoCarta.valueOf(tipoProducto);
-			} catch (IllegalArgumentException e) {
-				System.out.println("Tipo incorrecto");
-				error = true;
+						TipoCarta.valueOf(tipoProducto);
+					} catch (IllegalArgumentException e) {
+						System.out.println("Tipo incorrecto");
+						error = true;
+					}
+				} while (error);
+
+				System.out.println("Introduce la cantidad:");
+				cantidad = Utilidades.leerInt();
+
+				Venta v = new Venta(TipoCarta.valueOf(tipoProducto), cantidad, LocalDateTime.now());
+
+				ObjectOutputStream oos;
+				if (!fich_ventas.exists()) {
+					oos = new ObjectOutputStream(new FileOutputStream(fich_ventas));
+				} else {
+					oos = new MyObjectOutputStream(new FileOutputStream(fich_ventas, true));
+				}
+
+				oos.writeObject(v);
+				oos.close();
+
+				System.out.println("Venta guardada correctamente");
+			} catch (FileNotFoundException e) { 
+				System.out.println("No se encontró el fichero"); 
+			} catch (IOException e) { 
+				System.out.println("Error leyendo el fichero"); 
 			}
-		} while (error);
-
-		System.out.println("Introduce la cantidad:");
-		cantidad = Utilidades.leerInt();
-
-		Venta v = new Venta(TipoCarta.valueOf(tipoProducto), cantidad, LocalDateTime.now());
-
-		ObjectOutputStream oos;
-		if (!fich_ventas.exists()) {
-			oos = new ObjectOutputStream(new FileOutputStream(fich_ventas));
-		} else {
-			oos = new MyObjectOutputStream(new FileOutputStream(fich_ventas, true));
-		}
-
-		oos.writeObject(v);
-		oos.close();
-
-		System.out.println("Venta guardada correctamente");
+		}else{ 
+			System.out.println("El fichero no existe"); 
+		} 
 	}
 
 	//Metodo 4 
