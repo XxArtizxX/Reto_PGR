@@ -11,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.TreeMap;
 
 import clases.Cliente;
 import clases.Empleado;
@@ -379,7 +380,7 @@ public class Programa_Principal {
 
 		System.out.println("introduce el nuevo precio del producto");
 		precio=Utilidades.leerDouble(1,200);
-
+		
 		File fichAux = new File("productos_aux.dat");
 
 		try (
@@ -415,6 +416,12 @@ public class Programa_Principal {
 		System.out.println("Precio modificado ");
 
 
+	}
+	
+	//Metodo 8
+	public static void rankingCompradores() {
+		TreeMap<String, Integer> ranking = new TreeMap<>();
+		//preguntar a leire como hacer para que el treemap este ordenado por fecha y coja los datos del fichero de ventas.
 	}
 
 }
