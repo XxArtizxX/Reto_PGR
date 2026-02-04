@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 import clases.Cliente;
 import clases.Empleado;
@@ -280,82 +282,95 @@ public class Programa_Principal {
 		System.out.println("Venta guardada correctamente");
 	}
 
-//Metodo 4 
-public static void consultarVentas(File fich_ventas) { 
-	LocalDateTime fechaVenta; 
-	ObjectInputStream ois; 
-	boolean finArchivo=false; 
-	if (fich_ventas.exists()) { 
-		try { 
-			ois=new ObjectInputStream(new FileInputStream(fich_ventas)); 
-			while (!finArchivo) { 
-				try { fechaVenta = (LocalDateTime) ois.readObject(); System.out.println(); } 
-				catch (EOFException e) { finArchivo = true; 
+	//Metodo 4 
+	public static void consultarVentas(File fich_ventas) { 
+		ArrayList<Venta> listaVentas= new ArrayList<>();
+		LocalDateTime fechaVenta; 
+		ObjectInputStream ois; 
+		boolean finArchivo=false; 
+		if (fich_ventas.exists()) { 
+			try { 
+				ois=new ObjectInputStream(new FileInputStream(fich_ventas)); 
+				while (!finArchivo) { 
+					try {
+						Venta v = (Venta) ois.readObject();
+						listaVentas.add(v);
+					} catch (EOFException e) {
+						finArchivo = true;
+					}
 				} 
-			} 
-			ois.close(); 
-		} catch (FileNotFoundException e) { 
-			System.out.println("No se encontró el fichero"); 
-		} catch (ClassNotFoundException e) { 
-			System.out.println("La clase Animal no es válida"); 
-		} catch (IOException e) { 
-			System.out.println("Error leyendo el fichero"); 
-		} 
-	} else { 
-		System.out.println("El fichero no existe"); 
-	} 
-}
-
-//Metodo 5
-public static void listarInventarioProductos(File fich_productos) {
-	ObjectInputStream ois;
-	boolean finArchivo=false;
-	if (fich_productos.exists()) {
-		try {
-			ois=new ObjectInputStream(new FileInputStream(fich_productos));
-			while (!finArchivo) {
-				try {
-					Producto p = (Producto) ois.readObject();
-					System.out.println(p);
-				} catch (EOFException e) {
-					finArchivo = true;
-				}
+				ois.close(); 
+			} catch (FileNotFoundException e) { 
+				System.out.println("No se encontró el fichero"); 
+			} catch (ClassNotFoundException e) { 
+				System.out.println("La clase Animal no es válida"); 
+			} catch (IOException e) { 
+				System.out.println("Error leyendo el fichero"); 
 			}
-			ois.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("No se encontró el fichero");
-		} catch (ClassNotFoundException e) {
-			System.out.println("La clase Producto no es válida");
-		} catch (IOException e) {
-			System.out.println("Error leyendo el fichero");
-		}
-	} else {
-		System.out.println("El fichero no existe");
+			listaVentas.sort(Comparator.comparing(Venta::getFecha));
+			if (listaVentas.isEmpty()) {
+				System.out.println("No hay ventas registradas.");
+			} else {
+				System.out.println("--- Listado de Ventas Ordenadas por Fecha ---");
+				for (Venta v : listaVentas) {
+					System.out.println(v.toString());
+				} 
+			}
+		} else { 
+			System.out.println("El fichero no existe"); 
+		} 
 	}
-}
-//Metodo 6
-public static void modificarPrecio() {
-	TipoCarta tipoCaja;	
-	String tipoProducto;
-	boolean error=false;
 
-	do {
-		error=false;
-		System.out.println("Introduce el tipo de producto (Magic, Fútbol o Pokémon)");
-		tipoProducto=Utilidades.introducirCadena();
-
-		try {
-			tipoCaja = TipoCarta.valueOf(tipoProducto); 
-
-
-		} catch (IllegalArgumentException e) {
-
-			System.err.println("El producto '" + tipoProducto + "' no es válido.");
-			error=true;
+	//Metodo 5
+	public static void listarInventarioProductos(File fich_productos) {
+		ObjectInputStream ois;
+		boolean finArchivo=false;
+		if (fich_productos.exists()) {
+			try {
+				ois=new ObjectInputStream(new FileInputStream(fich_productos));
+				while (!finArchivo) {
+					try {
+						Producto p = (Producto) ois.readObject();
+						System.out.println(p);
+					} catch (EOFException e) {
+						finArchivo = true;
+					}
+				}
+				ois.close();
+			} catch (FileNotFoundException e) {
+				System.out.println("No se encontró el fichero");
+			} catch (ClassNotFoundException e) {
+				System.out.println("La clase Producto no es válida");
+			} catch (IOException e) {
+				System.out.println("Error leyendo el fichero");
+			}
+		} else {
+			System.out.println("El fichero no existe");
 		}
-	}while(error==true);
+	}
+	//Metodo 6
+	public static void modificarPrecio() {
+		TipoCarta tipoCaja;	
+		String tipoProducto;
+		boolean error=false;
+
+		do {
+			error=false;
+			System.out.println("Introduce el tipo de producto (Magic, Fútbol o Pokémon)");
+			tipoProducto=Utilidades.introducirCadena();
+
+			try {
+				tipoCaja = TipoCarta.valueOf(tipoProducto); 
 
 
-}
+			} catch (IllegalArgumentException e) {
+
+				System.err.println("El producto '" + tipoProducto + "' no es válido.");
+				error=true;
+			}
+		}while(error==true);
+
+
+	}
 
 }
