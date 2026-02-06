@@ -355,6 +355,7 @@ public class Programa_Principal {
 			System.out.println("El fichero no existe");
 		}
 	}
+	
 	//Metodo 6
 	public static void modificarPrecio(File fich_productos) {
 		TipoCarta tipoCaja = null;	
@@ -418,6 +419,10 @@ public class Programa_Principal {
 
 	}
 	
+	//Metodo 7
+	public static void ventasTotalesProducto() {
+		
+	}
 	//Metodo 8
 	public static void rankingCompradores() {
 		TreeMap<String, Integer> ranking = new TreeMap<>();
