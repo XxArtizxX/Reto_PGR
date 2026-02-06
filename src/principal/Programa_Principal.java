@@ -19,7 +19,7 @@ import clases.Empleado;
 import clases.Producto;
 import clases.Venta;
 import enumeraciones.TipoCarta;
-import excepciones.NoStockException;
+import excepciones.NegativeStockException;
 import excepciones.OverStockExcepcion;
 import utilidades.MyObjectOutputStream;
 import utilidades.Utilidades;
@@ -246,8 +246,9 @@ public class Programa_Principal {
 	// Metodo 3 - realizarVenta sin variable tipoCaja
 	public static void realizarVenta(File fich_ventas){
 		String tipoProducto;
-		int cantidad;
+		int cantidad, stockRestante;
 		boolean error;
+		ObjectOutputStream oos;
 		if(fich_ventas.exists()) {
 			try {
 				do {
@@ -255,37 +256,50 @@ public class Programa_Principal {
 					System.out.println("Introduce el tipo de producto (MAGIC, FUTBOL o POKEMON)");
 					tipoProducto = Utilidades.introducirCadena().toUpperCase();
 					try {
-
 						TipoCarta.valueOf(tipoProducto);
 					} catch (IllegalArgumentException e) {
-						System.out.println("Tipo incorrecto");
+						System.out.println("Tipo incorrecto. Debe ser MAGIC, FUTBOL O POKEMON");
 						error = true;
 					}
 				} while (error);
 
-				System.out.println("Introduce la cantidad:");
+				System.out.println("Stock actual disponible: "+Producto.stock);
+				System.out.println("Introduce la cantidad a vender (0 para cancelar la venta):");
 				cantidad = Utilidades.leerInt();
+				if(cantidad==0) {
+					System.out.println("Venta cancelada. ");
+				}else if(cantidad<0) {
+					throw new NegativeStockException("El stock no puede ser negativo");
+				}else if(cantidad > Producto.stock) {
+					throw new OverStockExcepcion("No hay suficiente stock. Stock disponible: "+Producto.stock);
+				}else {
 				Producto.stock-=cantidad;
 				Venta v = new Venta(TipoCarta.valueOf(tipoProducto), cantidad, LocalDateTime.now());
-				System.out.println("Venta guardada. Stock restante: " + Producto.stock);
-				ObjectOutputStream oos;
-				if (!fich_ventas.exists()) {
-					oos = new ObjectOutputStream(new FileOutputStream(fich_ventas));
-				} else {
-					oos = new MyObjectOutputStream(new FileOutputStream(fich_ventas, true));
+				if(fich_ventas.length()==0) {
+				oos=new ObjectOutputStream(new FileOutputStream(fich_ventas));
+				}else {
+					oos= new ObjectOutputStream(new FileOutputStream(fich_ventas, true));
 				}
 
 				oos.writeObject(v);
 				oos.close();
 
 				System.out.println("Venta guardada correctamente");
+				System.out.println("Stock Restante: "+Producto.stock);
+				}
 			} catch (FileNotFoundException e) { 
-				System.out.println("No se encontró el fichero"); 
+				System.err.println("No se encontró el fichero"); 
 			} catch (IOException e) { 
-				System.out.println("Error leyendo el fichero"); 
+				System.err.println("Error leyendo el fichero"); 
+			} catch (NegativeStockException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (OverStockExcepcion e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}else{ 
-			System.out.println("El fichero no existe"); 
+			System.err.println("El fichero no existe"); 
 		} 
 	}
 
