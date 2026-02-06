@@ -273,19 +273,19 @@ public class Programa_Principal {
 				}else if(cantidad > Producto.stock) {
 					throw new OverStockExcepcion("No hay suficiente stock. Stock disponible: "+Producto.stock);
 				}else {
-				Producto.stock-=cantidad;
-				Venta v = new Venta(TipoCarta.valueOf(tipoProducto), cantidad, LocalDateTime.now());
-				if(fich_ventas.length()==0) {
-				oos=new ObjectOutputStream(new FileOutputStream(fich_ventas));
-				}else {
-					oos= new ObjectOutputStream(new FileOutputStream(fich_ventas, true));
-				}
+					Producto.stock-=cantidad;
+					Venta v = new Venta(TipoCarta.valueOf(tipoProducto), cantidad, LocalDateTime.now());
+					if(fich_ventas.length()==0) {
+						oos=new ObjectOutputStream(new FileOutputStream(fich_ventas));
+					}else {
+						oos= new ObjectOutputStream(new FileOutputStream(fich_ventas, true));
+					}
 
-				oos.writeObject(v);
-				oos.close();
+					oos.writeObject(v);
+					oos.close();
 
-				System.out.println("Venta guardada correctamente");
-				System.out.println("Stock Restante: "+Producto.stock);
+					System.out.println("Venta guardada correctamente");
+					System.out.println("Stock Restante: "+Producto.stock);
 				}
 			} catch (FileNotFoundException e) { 
 				System.err.println("No se encontró el fichero"); 
@@ -369,7 +369,7 @@ public class Programa_Principal {
 			System.out.println("El fichero no existe");
 		}
 	}
-	
+
 	//Metodo 6
 	public static void modificarPrecio(File fich_productos) {
 		TipoCarta tipoCaja = null;	
@@ -395,7 +395,7 @@ public class Programa_Principal {
 
 		System.out.println("introduce el nuevo precio del producto");
 		precio=Utilidades.leerDouble(1,200);
-		
+
 		File fichAux = new File("productos_aux.dat");
 
 		try (
@@ -432,10 +432,13 @@ public class Programa_Principal {
 
 
 	}
-	
+
 	//Metodo 7
 	public static void ventasTotalesProducto() {
-		
+		for(TipoCarta tp : TipoCarta.values()) {
+			System.out.println("Las ventas totales de cada categoría de producto han sido:");
+			System.out.println(tp);
+		}
 	}
 	//Metodo 8
 	public static void rankingCompradores() {
