@@ -11,11 +11,14 @@ public class Producto implements Serializable{
 	private TipoCarta tipoCaja;
 	private double precio;
 	public static int stock=200;
+	public static int ventasMagic = 0;
+    public static int ventasFutbol = 0;
+    public static int ventasPokemon = 0;
 
 	public Producto(TipoCarta tipoCaja, double precio, int stock) {
 		this.tipoCaja = tipoCaja;
 		this.precio = precio;
-		this.stock = stock;	
+		Producto.stock = stock;	
 		}
 	public TipoCarta getTipoCaja() {
 		return tipoCaja;
@@ -33,7 +36,7 @@ public class Producto implements Serializable{
 		return stock;
 	}
 	public void setStock(int stock) {
-		this.stock = stock;
+		Producto.stock = stock;
 	}
 	@Override
 	public String toString() {

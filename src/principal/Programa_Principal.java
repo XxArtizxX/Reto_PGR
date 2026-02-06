@@ -11,6 +11,9 @@ import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 
@@ -116,17 +119,19 @@ public class Programa_Principal {
 				dni=Utilidades.introducirCadena();
 				System.out.println("Introduce el nombre del nuevo usuario: ");
 				nombre=Utilidades.introducirCadena();
-				System.out.println("Introduce el apellido del empleado: ");
+				System.out.println("Introduce el tipo de persona: ");
 				tipoPersona=Utilidades.introducirCadena();
 				if(tipoPersona.equalsIgnoreCase("Empleado")) {
 					System.out.println("Introduzca el codigo del nuevo Empleado");
 					cod_Empleado=Utilidades.leerInt();
 					Empleado e=new Empleado(dni, nombre, tipoPersona, cod_Empleado);
+					System.out.println("Empleado añadido correctamente.");
 					oos.writeObject(e);
 				}else if(tipoPersona.equalsIgnoreCase("Cliente")) {
 					System.out.println("Introduzca el codigo del nuevo cliente");
 					cod_Cliente=Utilidades.leerInt();
 					Cliente c=new Cliente(dni, nombre, tipoPersona, cod_Cliente);
+					System.out.println("Cliente añadido correctamente.");
 					oos.writeObject(c);
 				}else {
 					System.out.println("Ese tipo de persona no existe");
@@ -148,17 +153,19 @@ public class Programa_Principal {
 				dni=Utilidades.introducirCadena();
 				System.out.println("Introduce el nombre del nuevo usuario: ");
 				nombre=Utilidades.introducirCadena();
-				System.out.println("Introduce el apellido del empleado: ");
+				System.out.println("Introduce el tipo de persona: ");
 				tipoPersona=Utilidades.introducirCadena();
 				if(tipoPersona.equalsIgnoreCase("Empleado")) {
 					System.out.println("Introduzca el codigo del nuevo Empleado");
 					cod_Empleado=Utilidades.leerInt();
 					Empleado e=new Empleado(dni, nombre, tipoPersona, cod_Empleado);
+					System.out.println("Empleado añadido correctamente.");
 					moos.writeObject(e);
 				}else if(tipoPersona.equalsIgnoreCase("Cliente")) {
 					System.out.println("Introduzca el codigo del nuevo cliente");
 					cod_Cliente=Utilidades.leerInt();
 					Cliente c=new Cliente(dni, nombre, tipoPersona, cod_Cliente);
+					System.out.println("Cliente añadido correctamente.");
 					moos.writeObject(c);
 				}else {
 					System.out.println("Ese tipo de persona no existe");
@@ -188,7 +195,7 @@ public class Programa_Principal {
 				do {
 					error=false;
 					System.out.println("Introduce el tipo de producto (Magic, Fútbol o Pokémon)");
-					tipoProducto=Utilidades.introducirCadena();
+					tipoProducto=Utilidades.introducirCadena().toUpperCase();
 
 					try {
 						tipoCaja = TipoCarta.valueOf(tipoProducto); 
@@ -246,11 +253,12 @@ public class Programa_Principal {
 	// Metodo 3 - realizarVenta sin variable tipoCaja
 	public static void realizarVenta(File fich_ventas){
 		String tipoProducto;
-		int cantidad, stockRestante;
+		int cantidad;
 		boolean error;
 		ObjectOutputStream oos;
 		if(fich_ventas.exists()) {
 			try {
+				oos = new ObjectOutputStream(new FileOutputStream(fich_ventas));
 				do {
 					error = false;
 					System.out.println("Introduce el tipo de producto (MAGIC, FUTBOL o POKEMON)");
@@ -273,13 +281,23 @@ public class Programa_Principal {
 				}else if(cantidad > Producto.stock) {
 					throw new OverStockExcepcion("No hay suficiente stock. Stock disponible: "+Producto.stock);
 				}else {
+					TipoCarta tipo = TipoCarta.valueOf(tipoProducto);
+
+					switch (tipo) {
+					case MAGIC:
+						Producto.ventasMagic += cantidad;
+						break;
+					case FUTBOL:
+						Producto.ventasFutbol += cantidad;
+						break;
+					case POKEMON:
+						Producto.ventasPokemon += cantidad;
+						break;
+					}
+					Cliente.totalCompras+=cantidad;
 					Producto.stock-=cantidad;
 					Venta v = new Venta(TipoCarta.valueOf(tipoProducto), cantidad, LocalDateTime.now());
-					if(fich_ventas.length()==0) {
-						oos=new ObjectOutputStream(new FileOutputStream(fich_ventas));
-					}else {
-						oos= new ObjectOutputStream(new FileOutputStream(fich_ventas, true));
-					}
+					
 
 					oos.writeObject(v);
 					oos.close();
@@ -435,14 +453,26 @@ public class Programa_Principal {
 
 	//Metodo 7
 	public static void ventasTotalesProducto() {
-		for(TipoCarta tp : TipoCarta.values()) {
-			System.out.println("Las ventas totales de cada categoría de producto han sido:");
-			System.out.println(tp);
-		}
+		int ventasTotales = Producto.ventasMagic + 
+				Producto.ventasFutbol + 
+				Producto.ventasPokemon;
+
+		int stockInicial = 200;
+		int stockRestante = Producto.stock;
+
+		System.out.println("=== VENTAS TOTALES POR PRODUCTO ===");
+		System.out.println("Stock inicial común:     " + stockInicial);
+		System.out.println("Stock restante actual:    " + stockRestante);
+		System.out.println("----------------------------------------");
+		System.out.println("MAGIC:    " + Producto.ventasMagic   + " unidades vendidas");
+		System.out.println("FUTBOL:   " + Producto.ventasFutbol  + " unidades vendidas");
+		System.out.println("POKEMON:  " + Producto.ventasPokemon + " unidades vendidas");
+		System.out.println("----------------------------------------");
+		System.out.println("Total unidades vendidas (todas categorías): " + ventasTotales);
 	}
 	//Metodo 8
-	public static void rankingCompradores() {
-		TreeMap<String, Integer> ranking = new TreeMap<>();
-	}
+	public static void rankingCompradores(File fich_personas) {
 
+	}
 }
+

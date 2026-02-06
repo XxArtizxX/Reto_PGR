@@ -7,12 +7,12 @@ public class Cliente extends Persona {
 	 */
 	private static final long serialVersionUID = 1L;
 	private int codigoCliente;
-	private int totalCompras;
+	public static int totalCompras;
 
 	public Cliente(String dni, String nombre, String tipoPersona, int codigoCliente) {
 		super(dni, nombre, tipoPersona);
 		this.codigoCliente = codigoCliente;
-		this.totalCompras = 0;
+		Cliente.totalCompras = 0;
 	}
 
 	public Cliente() {
@@ -32,16 +32,17 @@ public class Cliente extends Persona {
 	}
 
 	public void setTotalCompras(int totalCompras) {
-		this.totalCompras = totalCompras;
+		Cliente.totalCompras = totalCompras;
 	}
-
-	public void realizarCompra() {
-		this.totalCompras++;
-	}
+	public void agregarCompra(int cantidad) {
+        Cliente.totalCompras += cantidad;
+    }
 
 	@Override
 	public String toString() {
-		return "Cliente [codigoCliente=" + codigoCliente + ", totalCompras=" + 
-				totalCompras + ", dni=" + dni + ", nombre=" + nombre +  ", tipoPersona=" + tipoPersona + "]";
+		return "Cliente [codigoCliente=" + codigoCliente + ", dni=" + dni + ", nombre=" + nombre + ", tipoPersona="
+				+ tipoPersona + ", total de compras= "+totalCompras+"]";
 	}
+
+	
 }
