@@ -39,7 +39,8 @@ public class Programa_Principal {
 		System.out.println("6.- Modificar precio pidiendo el tipo de producto");
 		System.out.println("7.- Ventas totales por cada producto");
 		System.out.println("8.- Ranking de compradores");
-		System.out.println("9. Salir");
+		System.out.println("9.- Borrar cliente");
+		System.out.println("10.- Salir");
 		System.out.print("Elige una opción: ");
 	}
 
@@ -52,7 +53,7 @@ public class Programa_Principal {
 
 		do {
 			menu();
-			opcion = Utilidades.leerInt(1, 9);
+			opcion = Utilidades.leerInt(1, 10);
 
 			switch (opcion) {
 			case 1:
@@ -86,14 +87,21 @@ public class Programa_Principal {
 				break;
 
 			case 7:
-				System.out.println("ventas totales:");
+				System.out.println("Ventas totales:");
+				ventasTotalesProducto();
 				break;
 
 			case 8:
-				System.out.println("ranking de compradores:");
+				System.out.println("Ranking de compradores:");
+				rankingCompradores(fich_personas); 
 				break;
 
 			case 9:
+				System.out.println("Borrando cliente:");
+				borrarCliente(fich_personas); 
+				break;
+
+			case 10:
 				System.out.println("Saliendo del programa...");
 				break;
 
@@ -102,7 +110,7 @@ public class Programa_Principal {
 				System.out.println("Opción no válida");
 			}
 
-		} while (opcion != 9);
+		} while (opcion != 10);
 	}
 
 	//Metodo 1
@@ -250,15 +258,17 @@ public class Programa_Principal {
 		}
 	}
 
-	// Metodo 3 - realizarVenta sin variable tipoCaja
+	// Metodo 3
 	public static void realizarVenta(File fich_ventas){
 		String tipoProducto;
 		int cantidad;
 		boolean error;
 		ObjectOutputStream oos;
+
 		if(fich_ventas.exists()) {
 			try {
-				oos = new ObjectOutputStream(new FileOutputStream(fich_ventas));
+				oos = new ObjectOutputStream(new FileOutputStream(fich_ventas, true));
+
 				do {
 					error = false;
 					System.out.println("Introduce el tipo de producto (MAGIC, FUTBOL o POKEMON)");
@@ -274,51 +284,97 @@ public class Programa_Principal {
 				System.out.println("Stock actual disponible: "+Producto.stock);
 				System.out.println("Introduce la cantidad a vender (0 para cancelar la venta):");
 				cantidad = Utilidades.leerInt();
-				if(cantidad==0) {
-					System.out.println("Venta cancelada. ");
-				}else if(cantidad<0) {
-					throw new NegativeStockException("El stock no puede ser negativo");
-				}else if(cantidad > Producto.stock) {
-					throw new OverStockExcepcion("No hay suficiente stock. Stock disponible: "+Producto.stock);
-				}else {
-					TipoCarta tipo = TipoCarta.valueOf(tipoProducto);
 
-					switch (tipo) {
-					case MAGIC:
-						Producto.ventasMagic += cantidad;
-						break;
-					case FUTBOL:
-						Producto.ventasFutbol += cantidad;
-						break;
-					case POKEMON:
-						Producto.ventasPokemon += cantidad;
-						break;
-					}
-					Cliente.totalCompras+=cantidad;
-					Producto.stock-=cantidad;
-					Venta v = new Venta(TipoCarta.valueOf(tipoProducto), cantidad, LocalDateTime.now());
-					
-
-					oos.writeObject(v);
+				if(cantidad == 0) {
+					System.out.println("Venta cancelada.");
 					oos.close();
-
-					System.out.println("Venta guardada correctamente");
-					System.out.println("Stock Restante: "+Producto.stock);
+					return;
 				}
-			} catch (FileNotFoundException e) { 
-				System.err.println("No se encontró el fichero"); 
-			} catch (IOException e) { 
-				System.err.println("Error leyendo el fichero"); 
-			} catch (NegativeStockException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (OverStockExcepcion e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
+				if(cantidad < 0) {
+					throw new NegativeStockException("El stock no puede ser negativo");
+				}
+
+				if(cantidad > Producto.stock) {
+					throw new OverStockExcepcion("No hay suficiente stock. Stock disponible: "+Producto.stock);
+				}
+
+				// ACTUALIZAR CONTADORES
+				TipoCarta tipo = TipoCarta.valueOf(tipoProducto);
+				switch (tipo) {
+				case MAGIC:
+					Producto.ventasMagic += cantidad;
+					break;
+				case FUTBOL:
+					Producto.ventasFutbol += cantidad;
+					break;
+				case POKEMON:
+					Producto.ventasPokemon += cantidad;
+					break;
+				}
+
+				Producto.stock -= cantidad;
+
+				// GUARDAR LA VENTA
+				Venta v = new Venta(tipo, cantidad, LocalDateTime.now());
+				oos.writeObject(v);
+				oos.close();
+
+				// ACTUALIZAR CLIENTE
+				System.out.println("Introduce el código del cliente:");
+				int codCliente = Utilidades.leerInt();
+
+				File fichAux = new File("personas_aux.dat");
+				boolean encontrado = false;
+
+				try (
+						ObjectInputStream ois = new ObjectInputStream(new FileInputStream("personas.txt"));
+						ObjectOutputStream oosCli = new ObjectOutputStream(new FileOutputStream(fichAux))
+						) {
+					while (true) {
+						try {
+							Object obj = ois.readObject();
+
+							if (obj instanceof Cliente) {
+								Cliente c = (Cliente) obj;
+								if (c.getCodigoCliente() == codCliente) {
+									c.agregarCompra(cantidad);
+									encontrado = true;
+								}
+								oosCli.writeObject(c);
+							} else {
+								oosCli.writeObject(obj);
+							}
+						} catch (EOFException e) {
+							break;
+						}
+					}
+				}
+
+				if (encontrado) {
+					new File("personas.txt").delete();
+					fichAux.renameTo(new File("personas.txt"));
+					System.out.println("Compra añadida al cliente correctamente");
+				} else {
+					fichAux.delete();
+					System.out.println("Cliente no encontrado");
+				}
+
+				System.out.println("Venta guardada correctamente");
+				System.out.println("Stock restante: " + Producto.stock);
+
+			} catch (FileNotFoundException e) {
+				System.err.println("No se encontró el fichero");
+			} catch (IOException e) {
+				System.err.println("Error leyendo o escribiendo fichero");
+			} catch (NegativeStockException | OverStockExcepcion e) {
+				System.err.println(e.getMessage());
+			} catch (ClassNotFoundException e) {
+				System.err.println("Error de clase");
 			}
-		}else{ 
-			System.err.println("El fichero no existe"); 
-		} 
+		} else {
+			System.err.println("El fichero no existe");
+		}
 	}
 
 	//Metodo 4 
@@ -470,9 +526,112 @@ public class Programa_Principal {
 		System.out.println("----------------------------------------");
 		System.out.println("Total unidades vendidas (todas categorías): " + ventasTotales);
 	}
-	//Metodo 8
+	//metodo 8
 	public static void rankingCompradores(File fich_personas) {
+		ArrayList<Cliente> clientes = new ArrayList<>();
+		boolean fin = false;
 
+		if (!fich_personas.exists()) {
+			System.out.println("No hay clientes registrados.");
+			return;
+		}
+
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fich_personas));
+			while (!fin) {
+				try {
+					Object obj = ois.readObject();
+					if (obj instanceof Cliente) {
+						clientes.add((Cliente) obj);
+					}
+				} catch (EOFException e) {
+					fin = true;
+				}
+			}
+			ois.close();
+		} catch (IOException | ClassNotFoundException e) {
+			System.out.println("Error leyendo clientes.");
+			return;
+		}
+
+		//  ORDENACIÓN MANUAL (burbuja)
+		for (int i = 0; i < clientes.size() - 1; i++) {
+			for (int j = i + 1; j < clientes.size(); j++) {
+				if (clientes.get(i).getTotalCompras() < clientes.get(j).getTotalCompras()) {
+					Cliente aux = clientes.get(i);
+					clientes.set(i, clientes.get(j));
+					clientes.set(j, aux);
+				}
+			}
+		}
+
+		System.out.println("=== RANKING DE COMPRADORES ===");
+		for (int i = 0; i < clientes.size(); i++) {
+			Cliente c = clientes.get(i);
+			System.out.println(
+					(i + 1) + ". " +
+							c.getNombre() +
+							" | Código: " + c.getCodigoCliente() +
+							" | Compras: " + c.getTotalCompras()
+					);
+		}
 	}
+	//metodo 9:
+	public static void borrarCliente(File fich_personas) {
+		if (!fich_personas.exists()) {
+			System.out.println("No existe el fichero de personas.");
+			return;
+		}
+
+		System.out.println("Introduce el código del cliente a borrar:");
+		int codCliente = Utilidades.leerInt();
+
+		File fichAux = new File("personas_aux.dat");
+		boolean borrado = false;
+		boolean fin = false;
+
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fich_personas));
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fichAux));
+
+			while (!fin) {
+				try {
+					Object obj = ois.readObject();
+
+					if (obj instanceof Cliente) {
+						Cliente c = (Cliente) obj;
+
+						if (c.getCodigoCliente() == codCliente) {
+							borrado = true; // no se escribe
+						} else {
+							oos.writeObject(c); // se mantiene
+						}
+					} else {
+						oos.writeObject(obj); // otras personas
+					}
+
+				} catch (EOFException e) {
+					fin = true;
+				}
+			}
+
+			ois.close();
+			oos.close();
+
+		} catch (IOException | ClassNotFoundException e) {
+			System.out.println("Error al borrar cliente.");
+			return;
+		}
+
+		if (borrado) {
+			fich_personas.delete();
+			fichAux.renameTo(fich_personas);
+			System.out.println("Cliente borrado correctamente.");
+		} else {
+			fichAux.delete();
+			System.out.println("No se encontró ningún cliente con ese código.");
+		}
+	}
+
 }
 
