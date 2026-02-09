@@ -45,7 +45,6 @@ public class Programa_Principal {
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		int opcion;
 		File fich_personas = new File ("personas.txt");
 		File fich_productos = new File("productos.dat");
@@ -113,7 +112,6 @@ public class Programa_Principal {
 		} while (opcion != 10);
 	}
 
-	//Metodo 1
 	public static void altaPersona(File fich_personas) {
 		String nombre, dni, tipoPersona;
 		int cod_Cliente, cod_Empleado;
@@ -146,10 +144,8 @@ public class Programa_Principal {
 				}
 				oos.close();
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}else if(fich_personas.exists()) {
@@ -180,15 +176,13 @@ public class Programa_Principal {
 				}
 				moos.close();
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
-	//metodo 2
+
 	public static void altaProducto(File fich_Producto) {
 		TipoCarta tipoCaja = null;
 		String tipoProducto;
@@ -219,10 +213,8 @@ public class Programa_Principal {
 				oos.writeObject(p);
 				oos.close();
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}else if(fich_Producto.exists()) {
@@ -249,16 +241,13 @@ public class Programa_Principal {
 				moos.writeObject(p);
 				moos.close();
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
 
-	// Metodo 3
 	public static void realizarVenta(File fich_ventas){
 		String tipoProducto;
 		int cantidad;
@@ -299,7 +288,6 @@ public class Programa_Principal {
 					throw new OverStockExcepcion("No hay suficiente stock. Stock disponible: "+Producto.stock);
 				}
 
-				// ACTUALIZAR CONTADORES
 				TipoCarta tipo = TipoCarta.valueOf(tipoProducto);
 				switch (tipo) {
 				case MAGIC:
@@ -315,12 +303,10 @@ public class Programa_Principal {
 
 				Producto.stock -= cantidad;
 
-				// GUARDAR LA VENTA
 				Venta v = new Venta(tipo, cantidad, LocalDateTime.now());
 				oos.writeObject(v);
 				oos.close();
 
-				// ACTUALIZAR CLIENTE
 				System.out.println("Introduce el código del cliente:");
 				int codCliente = Utilidades.leerInt();
 
@@ -377,7 +363,6 @@ public class Programa_Principal {
 		}
 	}
 
-	//Metodo 4 
 	public static void consultarVentas(File fich_ventas) { 
 		ArrayList<Venta> listaVentas= new ArrayList<>();
 		LocalDateTime fechaVenta; 
@@ -416,7 +401,6 @@ public class Programa_Principal {
 		} 
 	}
 
-	//Metodo 5
 	public static void listarInventarioProductos(File fich_productos) {
 		ObjectInputStream ois;
 		boolean finArchivo=false;
@@ -444,7 +428,6 @@ public class Programa_Principal {
 		}
 	}
 
-	//Metodo 6
 	public static void modificarPrecio(File fich_productos) {
 		TipoCarta tipoCaja = null;	
 		String tipoProducto;
@@ -507,7 +490,6 @@ public class Programa_Principal {
 
 	}
 
-	//Metodo 7
 	public static void ventasTotalesProducto() {
 		int ventasTotales = Producto.ventasMagic + 
 				Producto.ventasFutbol + 
@@ -526,7 +508,7 @@ public class Programa_Principal {
 		System.out.println("----------------------------------------");
 		System.out.println("Total unidades vendidas (todas categorías): " + ventasTotales);
 	}
-	//metodo 8
+
 	public static void rankingCompradores(File fich_personas) {
 		ArrayList<Cliente> clientes = new ArrayList<>();
 		boolean fin = false;
@@ -554,7 +536,6 @@ public class Programa_Principal {
 			return;
 		}
 
-		//  ORDENACIÓN MANUAL (burbuja)
 		for (int i = 0; i < clientes.size() - 1; i++) {
 			for (int j = i + 1; j < clientes.size(); j++) {
 				if (clientes.get(i).getTotalCompras() < clientes.get(j).getTotalCompras()) {
@@ -576,7 +557,7 @@ public class Programa_Principal {
 					);
 		}
 	}
-	//metodo 9:
+
 	public static void borrarCliente(File fich_personas) {
 		if (!fich_personas.exists()) {
 			System.out.println("No existe el fichero de personas.");
@@ -602,12 +583,12 @@ public class Programa_Principal {
 						Cliente c = (Cliente) obj;
 
 						if (c.getCodigoCliente() == codCliente) {
-							borrado = true; // no se escribe
+							borrado = true;
 						} else {
-							oos.writeObject(c); // se mantiene
+							oos.writeObject(c);
 						}
 					} else {
-						oos.writeObject(obj); // otras personas
+						oos.writeObject(obj);
 					}
 
 				} catch (EOFException e) {
@@ -634,4 +615,3 @@ public class Programa_Principal {
 	}
 
 }
-
