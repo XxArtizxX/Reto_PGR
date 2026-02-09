@@ -115,12 +115,9 @@ public class Programa_Principal {
 	public static void altaPersona(File fich_personas) {
 		String nombre, dni, tipoPersona;
 		int cod_Cliente, cod_Empleado;
-		double sueldo;
-		ObjectOutputStream oos;
-		MyObjectOutputStream moos;
 		if(!fich_personas.exists()) {
 			try {
-				oos = new ObjectOutputStream(new FileOutputStream(fich_personas));
+				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fich_personas));
 				System.out.println("Introduce el DNI del nuevo usuario : ");
 				dni=Utilidades.introducirCadena();
 				System.out.println("Introduce el nombre del nuevo usuario: ");
@@ -152,7 +149,7 @@ public class Programa_Principal {
 			System.out.println("El fichero ya existe, se añadirán al final");
 
 			try {
-				moos = new MyObjectOutputStream(new FileOutputStream(fich_personas,true));
+				MyObjectOutputStream moos = new MyObjectOutputStream(new FileOutputStream(fich_personas,true));
 				System.out.println("Introduce el DNI del nuevo usuario : ");
 				dni=Utilidades.introducirCadena();
 				System.out.println("Introduce el nombre del nuevo usuario: ");
@@ -189,11 +186,10 @@ public class Programa_Principal {
 		double precio;
 		int stock = 200;
 		boolean error;
-		ObjectOutputStream oos;
-		MyObjectOutputStream moos;
+		
 		if(!fich_Producto.exists()) {
 			try {
-				oos = new ObjectOutputStream(new FileOutputStream(fich_Producto));
+				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fich_Producto));
 				do {
 					error=false;
 					System.out.println("Introduce el tipo de producto (Magic, Fútbol o Pokémon)");
@@ -207,6 +203,7 @@ public class Programa_Principal {
 						error=true;
 					}
 				}while(error==true);
+				
 				System.out.println("Introduce el precio del producto");
 				precio=Utilidades.leerDouble();
 				Producto p = new Producto(tipoCaja, precio, stock);
@@ -221,7 +218,7 @@ public class Programa_Principal {
 			System.out.println("El fichero ya existe, se añadirán al final");
 
 			try {
-				moos = new MyObjectOutputStream(new FileOutputStream(fich_Producto));
+				MyObjectOutputStream moos = new MyObjectOutputStream(new FileOutputStream(fich_Producto));
 				do {
 					error=false;
 					System.out.println("Introduce el tipo de producto (Magic, Fútbol o Pokémon)");
@@ -234,7 +231,8 @@ public class Programa_Principal {
 						System.err.println("El producto '" + tipoProducto + "' no es válido.");
 						error=true;
 					}
-				}while(error==true);
+				}while(error);
+				
 				System.out.println("Introduce el precio del producto");
 				precio=Utilidades.leerDouble();
 				Producto p = new Producto(tipoCaja, precio, stock);
@@ -248,15 +246,15 @@ public class Programa_Principal {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	public static void realizarVenta(File fich_ventas){
 		String tipoProducto;
 		int cantidad;
-		boolean error;
-		ObjectOutputStream oos;
+		boolean error, finarchivo=true;
 
 		if(fich_ventas.exists()) {
 			try {
-				oos = new ObjectOutputStream(new FileOutputStream(fich_ventas, true));
+				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fich_ventas, true));
 
 				do {
 					error = false;
@@ -277,14 +275,9 @@ public class Programa_Principal {
 				if(cantidad == 0) {
 					System.out.println("Venta cancelada.");
 					oos.close();
-					return;
-				}
-
-				if(cantidad < 0) {
+				}else if(cantidad < 0) {
 					throw new NegativeStockException("El stock no puede ser negativo");
-				}
-
-				if(cantidad > Producto.stock) {
+				}else if(cantidad > Producto.stock) {
 					throw new OverStockExcepcion("No hay suficiente stock. Stock disponible: "+Producto.stock);
 				}
 
@@ -317,7 +310,7 @@ public class Programa_Principal {
 						ObjectInputStream ois = new ObjectInputStream(new FileInputStream("personas.txt"));
 						ObjectOutputStream oosCli = new ObjectOutputStream(new FileOutputStream(fichAux))
 						) {
-					while (true) {
+					while (!finarchivo) {
 						try {
 							Object obj = ois.readObject();
 
@@ -332,7 +325,7 @@ public class Programa_Principal {
 								oosCli.writeObject(obj);
 							}
 						} catch (EOFException e) {
-							break;
+							finarchivo = true;
 						}
 					}
 				}
@@ -365,12 +358,10 @@ public class Programa_Principal {
 
 	public static void consultarVentas(File fich_ventas) { 
 		ArrayList<Venta> listaVentas= new ArrayList<>();
-		LocalDateTime fechaVenta; 
-		ObjectInputStream ois; 
 		boolean finArchivo=false; 
 		if (fich_ventas.exists()) { 
 			try { 
-				ois=new ObjectInputStream(new FileInputStream(fich_ventas)); 
+				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fich_ventas)); 
 				while (!finArchivo) { 
 					try {
 						Venta v = (Venta) ois.readObject();
@@ -388,6 +379,7 @@ public class Programa_Principal {
 				System.out.println("Error leyendo el fichero"); 
 			}
 			listaVentas.sort(Comparator.comparing(Venta::getFecha));
+			
 			if (listaVentas.isEmpty()) {
 				System.out.println("No hay ventas registradas.");
 			} else {
@@ -402,11 +394,10 @@ public class Programa_Principal {
 	}
 
 	public static void listarInventarioProductos(File fich_productos) {
-		ObjectInputStream ois;
 		boolean finArchivo=false;
 		if (fich_productos.exists()) {
 			try {
-				ois=new ObjectInputStream(new FileInputStream(fich_productos));
+				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fich_productos));
 				while (!finArchivo) {
 					try {
 						Producto p = (Producto) ois.readObject();
@@ -433,7 +424,8 @@ public class Programa_Principal {
 		String tipoProducto;
 		double precio;
 		boolean error=false;
-		boolean fin = false;
+		boolean finarchivo = false;
+		
 		do {
 			error=false;
 			System.out.println("Introduce el tipo de producto (Magic, Fútbol o Pokémon)");
@@ -441,10 +433,7 @@ public class Programa_Principal {
 
 			try {
 				tipoCaja = TipoCarta.valueOf(tipoProducto); 
-
-
 			} catch (IllegalArgumentException e) {
-
 				System.err.println("El producto '" + tipoProducto + "' no es válido.");
 				error=true;
 			}
@@ -456,13 +445,11 @@ public class Programa_Principal {
 		File fichAux = new File("productos_aux.dat");
 
 		try (
-				ObjectInputStream ois =
-				new ObjectInputStream(new FileInputStream(fich_productos));
-				ObjectOutputStream oos =
-						new ObjectOutputStream(new FileOutputStream(fichAux))
+				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fich_productos));
+				ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fichAux))
 				) {
 
-			while (!fin) {
+			while (!finarchivo) {
 				try {
 					Producto p = (Producto) ois.readObject();
 
@@ -473,7 +460,7 @@ public class Programa_Principal {
 					oos.writeObject(p);
 
 				} catch (EOFException e) {
-					fin = true;
+					finarchivo = true;
 				}
 			}
 
@@ -486,8 +473,6 @@ public class Programa_Principal {
 		fichAux.renameTo(fich_productos);
 
 		System.out.println("Precio modificado ");
-
-
 	}
 
 	public static void ventasTotalesProducto() {
@@ -511,29 +496,27 @@ public class Programa_Principal {
 
 	public static void rankingCompradores(File fich_personas) {
 		ArrayList<Cliente> clientes = new ArrayList<>();
-		boolean fin = false;
+		boolean finarchivo = false;
 
 		if (!fich_personas.exists()) {
 			System.out.println("No hay clientes registrados.");
-			return;
 		}
 
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fich_personas));
-			while (!fin) {
+			while (!finarchivo) {
 				try {
 					Object obj = ois.readObject();
 					if (obj instanceof Cliente) {
 						clientes.add((Cliente) obj);
 					}
 				} catch (EOFException e) {
-					fin = true;
+					finarchivo = true;
 				}
 			}
 			ois.close();
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("Error leyendo clientes.");
-			return;
 		}
 
 		for (int i = 0; i < clientes.size() - 1; i++) {
@@ -559,6 +542,8 @@ public class Programa_Principal {
 	}
 
 	public static void borrarCliente(File fich_personas) {
+		boolean borrado = false;
+		boolean finarchivo = false;
 		if (!fich_personas.exists()) {
 			System.out.println("No existe el fichero de personas.");
 			return;
@@ -568,14 +553,13 @@ public class Programa_Principal {
 		int codCliente = Utilidades.leerInt();
 
 		File fichAux = new File("personas_aux.dat");
-		boolean borrado = false;
-		boolean fin = false;
+
 
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fich_personas));
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fichAux));
 
-			while (!fin) {
+			while (!finarchivo) {
 				try {
 					Object obj = ois.readObject();
 
@@ -592,7 +576,7 @@ public class Programa_Principal {
 					}
 
 				} catch (EOFException e) {
-					fin = true;
+					finarchivo = true;
 				}
 			}
 
